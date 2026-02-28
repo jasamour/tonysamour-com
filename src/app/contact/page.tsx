@@ -8,9 +8,11 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+
   return (
     <>
-      <ContactForm />
+      <ContactForm turnstileSiteKey={turnstileSiteKey} />
 
       {/* FAQ or additional info */}
       <section className="py-16 lg:py-20 bg-[#faf8f6]">

@@ -8,12 +8,15 @@ import Textarea from '@/components/Textarea';
 import Button from '@/components/Button';
 import { sendContactEmail } from './actions';
 
-export default function ContactForm() {
+interface ContactFormProps {
+  turnstileSiteKey?: string;
+}
+
+export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const isLocalDev = process.env.NODE_ENV !== 'production';
   const bypassTurnstileInDev = isLocalDev && process.env.NEXT_PUBLIC_TURNSTILE_BYPASS_IN_DEV === 'true';
 
