@@ -64,6 +64,11 @@
 - [ ] Verify Worker deployment success in terminal output
 - [ ] Open live domain and run quick cross-page smoke test
 
+### Deploy troubleshooting notes
+
+- If deploy fails with `Could not resolve "virtual:vinext-rsc-entry"`, ensure `worker/index.ts` imports the built RSC handler from `../dist/server/index.js` (and calls `handler(request)`), not `vinext/server/app-router-entry`.
+- Keep Cloudflare deploy command as `npm run deploy` (not raw `wrangler deploy --config ...` with missing args).
+
 ## 7) Post-launch monitoring (first 24–48 hours)
 
 - [ ] Test contact form once per day
