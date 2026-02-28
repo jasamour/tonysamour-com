@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import Container from '@/components/Container';
 import Input from '@/components/Input';
@@ -17,8 +17,59 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [hasMessageIntent, setHasMessageIntent] = useState(false);
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | number | null>(null);
   const isLocalDev = process.env.NODE_ENV !== 'production';
   const bypassTurnstileInDev = isLocalDev && process.env.NEXT_PUBLIC_TURNSTILE_BYPASS_IN_DEV === 'true';
+  const shouldUseTurnstile = !bypassTurnstileInDev && Boolean(turnstileSiteKey);
+  const shouldRenderTurnstile = shouldUseTurnstile && hasMessageIntent;
+
+  const markMessageIntent = () => {
+    setHasMessageIntent(true);
+  };
+
+  const renderTurnstile = useCallback(() => {
+    if (!shouldRenderTurnstile || !turnstileContainerRef.current) {
+      return;
+    }
+
+    const turnstileApi = (window as Window & { turnstile?: { render: (container: HTMLElement, options: Record<string, unknown>) => string | number; remove?: (widgetId: string | number) => void } }).turnstile;
+    if (!turnstileApi?.render) {
+      return;
+    }
+
+    if (turnstileWidgetIdRef.current !== null && turnstileApi.remove) {
+      turnstileApi.remove(turnstileWidgetIdRef.current);
+      turnstileWidgetIdRef.current = null;
+    }
+
+    turnstileContainerRef.current.innerHTML = '';
+    turnstileWidgetIdRef.current = turnstileApi.render(turnstileContainerRef.current, {
+      sitekey: turnstileSiteKey,
+      theme: 'light',
+      action: 'contact_submit',
+    });
+  }, [shouldRenderTurnstile, turnstileSiteKey]);
+
+  useEffect(() => {
+    if (!shouldRenderTurnstile) {
+      return;
+    }
+
+    renderTurnstile();
+
+    return () => {
+      const turnstileApi = (window as Window & { turnstile?: { remove?: (widgetId: string | number) => void } }).turnstile;
+      if (turnstileWidgetIdRef.current !== null && turnstileApi?.remove) {
+        turnstileApi.remove(turnstileWidgetIdRef.current);
+      }
+      turnstileWidgetIdRef.current = null;
+      if (turnstileContainerRef.current) {
+        turnstileContainerRef.current.innerHTML = '';
+      }
+    };
+  }, [renderTurnstile, shouldRenderTurnstile]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,6 +78,15 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
     setFormErrors({});
 
     const formData = new FormData(e.currentTarget);
+    const turnstileToken = (formData.get('cf-turnstile-response') as string | null)?.trim() || '';
+
+    if (shouldUseTurnstile && !turnstileToken) {
+      setHasMessageIntent(true);
+      setError('Please complete the verification checkbox before sending.');
+      setLoading(false);
+      return;
+    }
+
     const result = await sendContactEmail(formData);
 
     if (result.success) {
@@ -58,7 +118,7 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="py-16 lg:py-20 relative">
-      {!bypassTurnstileInDev && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+      {!bypassTurnstileInDev && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer onLoad={renderTurnstile} />}
       <Container>
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl lg:text-5xl font-semibold text-[#1a1a1a] mb-6 tracking-tight">Let's talk.</h1>
@@ -85,12 +145,12 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
             <Input label="Website" name="website" id="website" type="text" placeholder="example.com" error={formErrors.website} disabled={loading} />
 
             {/* Message */}
-            <Textarea label="Message" name="message" id="message" placeholder="Tell me about your project, challenge, or idea..." rows={6} required error={formErrors.message} disabled={loading} />
+            <Textarea label="Message" name="message" id="message" placeholder="Tell me about your project, challenge, or idea..." rows={6} required error={formErrors.message} disabled={loading} onFocus={markMessageIntent} onChange={markMessageIntent} />
 
             {/* Deadline */}
             <Input label="Timeline" name="deadline" id="deadline" type="text" placeholder="e.g., 'Starting in 2 weeks' or 'No specific deadline'" error={formErrors.deadline} disabled={loading} />
 
-            <div className="pt-2">{bypassTurnstileInDev ? <p className="text-sm text-[#666]">Turnstile is bypassed in local development.</p> : turnstileSiteKey ? <div className="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light" data-action="contact_submit" /> : <p className="text-sm text-red-700">Form protection is not configured.</p>}</div>
+            <div className="pt-2">{bypassTurnstileInDev ? <p className="text-sm text-[#666]">Turnstile is bypassed in local development.</p> : turnstileSiteKey ? hasMessageIntent ? <div ref={turnstileContainerRef} /> : <p className="text-sm text-[#666]">Verification appears after you start entering your message.</p> : <p className="text-sm text-red-700">Form protection is not configured.</p>}</div>
 
             {/* Submit */}
             <div className="pt-4">
