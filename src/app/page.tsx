@@ -1,65 +1,122 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Hero from '@/components/Hero';
+import Container from '@/components/Container';
+import ServiceCard from '@/components/ServiceCard';
+import SectionHeading from '@/components/SectionHeading';
+import ProcessSteps from '@/components/ProcessSteps';
+import FitSection from '@/components/FitSection';
+import CTASection from '@/components/CTASection';
+
+const featuredProjects = [
+  {
+    title: 'OCSC Sailing',
+    image: '/assets/ocsc-sailing.jpg',
+    context: 'Booking and fleet-management integrations for a high-traffic sailing school and club platform.',
+    outcomes: ['Improved self-serve reservation and enrollment pathways', 'More reliable operational workflows across members, owners, and staff'],
+  },
+  {
+    title: 'Rockefeller Lodge',
+    image: '/assets/rockefeller-lodge.jpg',
+    context: 'Bilingual, media-forward venue site designed to drive high-intent tour and contact inquiries.',
+    outcomes: ['Clearer event and venue storytelling for prospective guests', 'Stronger mobile browsing and inquiry flow'],
+  },
+  {
+    title: 'Spirit Rock Meditation Center',
+    image: '/assets/spirit-rock-meditation-center.jpg',
+    context: 'Scalable program and content platform supporting online/on-land offerings and registration journeys.',
+    outcomes: ['Better discovery across a large, evolving program catalog', 'Reduced friction between content and registration pathways'],
+  },
+  {
+    title: 'TonySamour.com',
+    image: '/assets/tonysamour.jpg',
+    context: 'Premium consultant website with secure contact flows and streamlined Cloudflare deployment operations.',
+    outcomes: ['High-trust brand experience optimized for conversion', 'Hardened contact flow with Turnstile, rate limiting, and email automation'],
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      {/* Hero Section */}
+      <Hero title="Premium web strategy + implementation for small teams, founders, and organizations." subtitle="I build modern websites and systems, improve UX and performance, connect tools with practical automation, and keep everything maintained—so it stays reliable over time." primaryButtonText="Contact" primaryButtonHref="/contact" secondaryButtonText="View services" secondaryButtonHref="/services" />
+
+      {/* Services Overview */}
+      <section className="py-16 lg:py-24 bg-[#faf8f6]">
+        <Container>
+          <SectionHeading>How I help</SectionHeading>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ServiceCard title="Build" description="Premium sites and flows that feel clear, fast, and solid." />
+            <ServiceCard title="Improve" description="UX, content, performance, accessibility, and analytics tuned for real outcomes." />
+            <ServiceCard title="Automate" description="Practical integrations and reporting that save time and reduce errors." />
+            <ServiceCard title="Maintain" description="Updates, monitoring, and improvements to keep things stable." />
+          </div>
+        </Container>
+      </section>
+
+      {/* Featured Work */}
+      <section className="py-16 lg:py-24">
+        <Container>
+          <SectionHeading subtitle="Selected projects demonstrating strategy, design, and implementation excellence.">Featured work</SectionHeading>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {featuredProjects.map((project) => (
+              <div key={project.title} className="pb-8 md:pb-0 border-b md:border-b-0 border-[#e5e5e5]">
+                <div className="aspect-2/1 bg-[#e5e5e5] rounded-lg mb-8 overflow-hidden relative">
+                  <Image src={project.image} alt={project.title} fill className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-xl font-semibold text-[#1a1a1a] mb-3">{project.title}</h3>
+                <p className="text-[#666] text-sm mb-4 max-w-xl">{project.context}</p>
+                <ul className="space-y-2 text-sm text-[#666]">
+                  {project.outcomes.map((outcome) => (
+                    <li key={outcome}>• {outcome}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* How I Work */}
+      <section className="py-16 lg:py-24 bg-[#f0f9f9]">
+        <Container>
+          <SectionHeading>How I work</SectionHeading>
+          <ProcessSteps
+            steps={[
+              {
+                number: 1,
+                title: 'Intake & scope',
+                description: 'Understand your goals, constraints, and current state. Align on scope, timeline, deliverables, and investment.',
+              },
+              {
+                number: 2,
+                title: 'Build/fix',
+                description: 'Execute the work with regular communication and checkpoints.',
+              },
+              {
+                number: 3,
+                title: 'QA + launch',
+                description: 'Test thoroughly, gather feedback, deploy to production.',
+              },
+              {
+                number: 4,
+                title: 'Optional care',
+                description: 'Ongoing support, monitoring, and incremental improvements.',
+              },
+            ]}
+          />
+        </Container>
+      </section>
+
+      {/* Fit Section */}
+      <section className="py-16 lg:py-24">
+        <Container>
+          <SectionHeading>Good fit?</SectionHeading>
+          <FitSection goodFit={['Small teams and founders building their next product or improving an existing one', 'Organizations needing strategic input on web, UX, or technology decisions', 'Projects where quality, clarity, and long-term reliability matter', 'Engagements that benefit from an experienced, candid partner']} notGoodFit={['High-volume, project-based work with minimal strategy required', 'Teams looking for cheap or outsourced development labor', 'Projects requiring 24/7 support or dedicated full-time staff', 'Work in areas outside my expertise or values']} />
+        </Container>
+      </section>
+
+      {/* Final CTA */}
+      <CTASection heading="Start with a message." subheading="I'll reply with the simplest next step and a clear range for investment." buttonText="Contact" buttonHref="/contact" />
+    </>
   );
 }

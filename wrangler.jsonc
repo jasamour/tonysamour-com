@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "freelance-v1",
+  "compatibility_date": "2026-02-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "tonysamour.com",
+      "custom_domain": true,
+    },
+    {
+      "pattern": "www.tonysamour.com",
+      "custom_domain": true,
+    },
+  ],
+  "vars": {
+    "SITE_URL": "https://tonysamour.com",
+    "SITE_TITLE": "Tony Samour – Freelance Web / Tech Consultant",
+    "SITE_DESCRIPTION": "Freelance web consulting and implementation: website builds, updates, accessibility improvements, and light automations for small businesses and nonprofits.",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAACjlMNQ3jlKU5k_y",
+    "RESEND_FROM_EMAIL": "Tony Samour <hello@tonysamour.com>",
+    "CONTACT_TO_EMAIL": "hello@tonysamour.com",
+  },
+  "main": "./worker/index.ts",
+  "assets": {
+    "directory": "./dist/client",
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+  },
+  "images": {
+    "binding": "IMAGES",
+  },
+}
