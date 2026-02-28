@@ -3,13 +3,7 @@
   "name": "tonysamour-com",
   "compatibility_date": "2026-02-28",
   "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": false,
-  "routes": [
-    {
-      "pattern": "tonysamour.com",
-      "custom_domain": true,
-    },
-  ],
+  "workers_dev": true,
   "vars": {
     "SITE_URL": "https://tonysamour.com",
     "SITE_TITLE": "Tony Samour – Freelance Web / Tech Consultant",
