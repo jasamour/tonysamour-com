@@ -9,10 +9,6 @@
       "pattern": "tonysamour.com",
       "custom_domain": true,
     },
-    {
-      "pattern": "www.tonysamour.com",
-      "custom_domain": true,
-    },
   ],
   "vars": {
     "SITE_URL": "https://tonysamour.com",
