@@ -17,17 +17,16 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [hasMessageIntent, setHasMessageIntent] = useState(false);
+  const [emailValue, setEmailValue] = useState('');
+  const [messageValue, setMessageValue] = useState('');
+  const [forceShowTurnstile, setForceShowTurnstile] = useState(false);
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | number | null>(null);
   const isLocalDev = process.env.NODE_ENV !== 'production';
   const bypassTurnstileInDev = isLocalDev && process.env.NEXT_PUBLIC_TURNSTILE_BYPASS_IN_DEV === 'true';
   const shouldUseTurnstile = !bypassTurnstileInDev && Boolean(turnstileSiteKey);
-  const shouldRenderTurnstile = shouldUseTurnstile && hasMessageIntent;
-
-  const markMessageIntent = () => {
-    setHasMessageIntent(true);
-  };
+  const hasRequiredIntent = emailValue.trim().length > 0 && messageValue.trim().length > 0;
+  const shouldRenderTurnstile = shouldUseTurnstile && (hasRequiredIntent || forceShowTurnstile);
 
   const renderTurnstile = useCallback(() => {
     if (!shouldRenderTurnstile || !turnstileContainerRef.current) {
@@ -81,7 +80,7 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
     const turnstileToken = (formData.get('cf-turnstile-response') as string | null)?.trim() || '';
 
     if (shouldUseTurnstile && !turnstileToken) {
-      setHasMessageIntent(true);
+      setForceShowTurnstile(true);
       setError('Please complete the verification checkbox before sending.');
       setLoading(false);
       return;
@@ -93,6 +92,9 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
       setSuccess(true);
       e.currentTarget.reset();
       setFormErrors({});
+      setEmailValue('');
+      setMessageValue('');
+      setForceShowTurnstile(false);
     } else {
       setError(result.error || 'Failed to send message');
     }
@@ -136,7 +138,7 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
             <Input label="Name" name="name" id="name" type="text" placeholder="Your name" required error={formErrors.name} disabled={loading} />
 
             {/* Email */}
-            <Input label="Email" name="email" id="email" type="email" placeholder="your@email.com" required error={formErrors.email} disabled={loading} />
+            <Input label="Email" name="email" id="email" type="email" placeholder="your@email.com" required error={formErrors.email} disabled={loading} onChange={(e) => setEmailValue(e.currentTarget.value)} />
 
             {/* Organization */}
             <Input label="Organization" name="organization" id="organization" type="text" placeholder="Company or project name" error={formErrors.organization} disabled={loading} />
@@ -145,12 +147,12 @@ export default function ContactForm({ turnstileSiteKey = '' }: ContactFormProps)
             <Input label="Website" name="website" id="website" type="text" placeholder="example.com" error={formErrors.website} disabled={loading} />
 
             {/* Message */}
-            <Textarea label="Message" name="message" id="message" placeholder="Tell me about your project, challenge, or idea..." rows={6} required error={formErrors.message} disabled={loading} onFocus={markMessageIntent} onChange={markMessageIntent} />
+            <Textarea label="Message" name="message" id="message" placeholder="Tell me about your project, challenge, or idea..." rows={6} required error={formErrors.message} disabled={loading} onChange={(e) => setMessageValue(e.currentTarget.value)} />
 
             {/* Deadline */}
             <Input label="Timeline" name="deadline" id="deadline" type="text" placeholder="e.g., 'Starting in 2 weeks' or 'No specific deadline'" error={formErrors.deadline} disabled={loading} />
 
-            <div className="pt-2">{bypassTurnstileInDev ? <p className="text-sm text-[#666]">Turnstile is bypassed in local development.</p> : turnstileSiteKey ? hasMessageIntent ? <div ref={turnstileContainerRef} /> : <p className="text-sm text-[#666]">Verification appears after you start entering your message.</p> : <p className="text-sm text-red-700">Form protection is not configured.</p>}</div>
+            <div className="pt-2">{bypassTurnstileInDev ? <p className="text-sm text-[#666]">Turnstile is bypassed in local development.</p> : turnstileSiteKey ? shouldRenderTurnstile ? <div ref={turnstileContainerRef} /> : null : <p className="text-sm text-red-700">Form protection is not configured.</p>}</div>
 
             {/* Submit */}
             <div className="pt-4">
