@@ -20,8 +20,8 @@ export default function CaseStudySection({ title, subtitle, image, context, what
 
       {/* Image placeholder */}
       {image ? (
-        <div className="mb-8 aspect-2/1 bg-[#e5e5e5] rounded-lg overflow-hidden relative">
-          <Image src={image} alt={title} fill className="w-full h-full object-cover" sizes="100vw" quality={100} />
+        <div className="mb-8 bg-[#e5e5e5] rounded-lg overflow-hidden">
+          <Image src={image} alt={title} width={1600} height={802} className="w-full h-auto object-cover" sizes="100vw" quality={100} />
         </div>
       ) : (
         <div className="mb-8 aspect-2/1 bg-linear-to-br from-[#e5e5e5] to-[#d0d0d0] rounded-lg flex items-center justify-center text-[#999] text-sm font-medium">Project Image</div>
