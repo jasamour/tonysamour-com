@@ -61,7 +61,7 @@ export default function Home() {
             {featuredProjects.map((project) => (
               <div key={project.title} className="pb-8 md:pb-0 border-b md:border-b-0 border-[#e5e5e5]">
                 <div className="bg-[#e5e5e5] rounded-lg mb-8 overflow-hidden">
-                  <Image src={project.image} alt={project.title} width={1600} height={802} className="w-full h-auto object-cover" sizes="(min-width: 768px) 50vw, 100vw" quality={100} />
+                  <Image src={project.image} alt={project.title} width={1600} height={802} className="w-full h-auto object-cover" sizes="(min-width: 768px) 50vw, 100vw" unoptimized />
                 </div>
                 <h3 className="text-xl font-semibold text-[#1a1a1a] mb-3">{project.title}</h3>
                 <p className="text-[#666] text-sm mb-4 max-w-xl">{project.context}</p>
